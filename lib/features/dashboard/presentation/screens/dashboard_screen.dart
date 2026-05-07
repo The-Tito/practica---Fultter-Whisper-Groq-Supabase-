@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:proyecto/core/router/app_router.dart';
 import 'package:proyecto/core/theme/app_colors.dart';
 import 'package:proyecto/core/widgets/app_bottom_nav_bar.dart';
 import 'package:proyecto/core/widgets/base_screen.dart';
@@ -98,10 +100,26 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             child: Row(
               children: [
                 Expanded(
-                  child: AppBottomNavBar(currentIndex: 0, onTap: (int p1) {}),
+                  child: AppBottomNavBar(
+                    currentIndex: 0,
+                    onTap: (int index) {
+                      switch (index) {
+                        case 0:
+                          context.go(AppRoutes.dashboard);
+                        case 1:
+                          context.go(AppRoutes.library);
+                        case 2:
+                          context.go(AppRoutes.profile);
+                      }
+                    },
+                  ),
                 ),
                 const SizedBox(width: 12),
-                MicButton(onTap: () {}, width: 55, height: 55),
+                MicButton(
+                  onTap: () => (context.go(AppRoutes.recording)),
+                  width: 55,
+                  height: 55,
+                ),
               ],
             ),
           ),
