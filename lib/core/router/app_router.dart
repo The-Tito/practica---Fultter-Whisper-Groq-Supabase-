@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:proyecto/core/widgets/playground/playground_screen.dart';
 import 'package:proyecto/features/auth/presentation/screens/login_screen.dart';
 import 'package:proyecto/features/auth/presentation/screens/register_screen.dart';
+import 'package:proyecto/features/dashboard/presentation/screens/dashboard_screen.dart';
 
 abstract class AppRoutes {
   static const login = '/login';
@@ -16,7 +17,7 @@ abstract class AppRoutes {
 }
 
 final appRouter = GoRouter(
-  initialLocation: AppRoutes.login,
+  initialLocation: AppRoutes.dashboard,
   // redirect: _authGuard <- cuanto ya tengamos auth
   routes: [
     GoRoute(
@@ -26,6 +27,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.register,
       builder: (context, state) => const RegisterScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.dashboard,
+      builder: (context, state) => const DashboardScreen(),
     ),
     GoRoute(
       path: AppRoutes.playground,

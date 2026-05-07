@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:proyecto/core/theme/app_colors.dart';
+import 'package:proyecto/core/widgets/app_bottom_nav_bar.dart';
 import 'package:proyecto/core/widgets/app_google_button.dart';
 import 'package:proyecto/core/widgets/app_primary_button.dart';
 import 'package:proyecto/core/widgets/app_text_field.dart';
 import 'package:proyecto/core/widgets/base_screen.dart';
+import 'package:proyecto/core/widgets/mic_button.dart';
+import 'package:proyecto/features/dashboard/presentation/widgets/hero_record_card.dart';
+import 'package:proyecto/features/dashboard/presentation/widgets/stat_card.dart';
 
 class PlaygroundScreen extends StatefulWidget {
   const PlaygroundScreen({super.key});
@@ -58,6 +62,53 @@ class _PlaygroundScreenState extends State<PlaygroundScreen> {
             AppPrimaryButton(label: 'Iniciar sesión', onPressed: () {}),
             _section('Botón Google'),
             AppGoogleButton(onPressed: () {}),
+            _section('Navbar'),
+            SizedBox(
+              height: 80,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Positioned(
+                    bottom: 0,
+                    left: 2,
+                    right: 70,
+                    child: AppBottomNavBar(currentIndex: 0, onTap: (int p1) {}),
+                  ),
+                  Positioned(
+                    bottom: 6,
+                    right: 0, // flota sobre el navbar
+                    child: MicButton(onTap: () {}, width: 55, height: 55),
+                  ),
+                ],
+              ),
+            ),
+            _section('StatCard'),
+            StatCard(
+              gradient: RadialGradient(
+                center: Alignment.topLeft,
+                radius: 0.9,
+                colors: [
+                  Color.fromARGB(255, 91, 211, 179),
+                  Color.fromRGBO(62, 168, 138, 1),
+                ],
+              ),
+              shadow: BoxShadow(
+                color: Color(
+                  0xFF5BD3C5,
+                ).withAlpha(60), // mismo color, semi-transparente
+                blurRadius: 10, // qué tan difuso es el glow
+                spreadRadius: 2, // qué tan lejos se expande
+              ),
+              label: 'ESTE MES',
+              value: '4h 12m',
+              description: 'transcritos',
+            ),
+            _section('Hero record'),
+            HeroRecordCard(
+              statusLabel: 'LISTO PARA ESCUCHAR',
+              title: 'Captura tu voz.\nTe devolvemos texto.',
+              onRecord: () {},
+            ),
           ],
         ),
       ),
