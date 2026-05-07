@@ -225,14 +225,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     if (_formkey.currentState?.validate() ?? false) {
       ref
           .read(authProvider.notifier)
-          .loginWithEmail(
+          .registerWithEmail(
+            name: _nameController.text.trim(),
             email: _emailController.text.trim(),
             password: _passwordController.text,
           );
     }
   }
 
-  void _handleGoogleLogin() {
-    ref.read(authProvider.notifier).loginWithGoogle();
-  }
+  void _handleGoogleLogin() {}
 }

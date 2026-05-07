@@ -5,6 +5,12 @@ abstract class AuthDataSource {
     required String email,
     required String password,
   });
-  Future<UserModel> loginWithGoogle();
+
+  Future<UserModel> registerWithEmail({
+    required String name,
+    required String email,
+    required String password,
+  });
+
   Future<void> logout();
 }

@@ -6,7 +6,11 @@ abstract class AuthRepository {
     required String password,
   });
 
-  // implementacion futura
-  Future<UserEntity> loginWithGoogle();
+  Future<UserEntity> registerWithEmail({
+    required String name,
+    required String email,
+    required String password,
+  });
+
   Future<void> logout();
 }

@@ -17,7 +17,7 @@ abstract class AppRoutes {
 }
 
 final appRouter = GoRouter(
-  initialLocation: AppRoutes.dashboard,
+  initialLocation: AppRoutes.login,
   // redirect: _authGuard <- cuanto ya tengamos auth
   routes: [
     GoRoute(

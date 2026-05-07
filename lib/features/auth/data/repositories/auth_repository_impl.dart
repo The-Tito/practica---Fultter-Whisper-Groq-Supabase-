@@ -23,9 +23,17 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<UserEntity> loginWithGoogle() async {
+  Future<UserEntity> registerWithEmail({
+    required String name,
+    required String email,
+    required String password,
+  }) async {
     try {
-      return await _authDataSource.loginWithGoogle();
+      return await _authDataSource.registerWithEmail(
+        name: name,
+        email: email,
+        password: password,
+      );
     } catch (e) {
       throw Exception(e.toString().replaceAll('Exception: ', ''));
     }
