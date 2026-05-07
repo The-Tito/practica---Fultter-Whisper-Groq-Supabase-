@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'package:proyecto/core/widgets/playground/playground_screen.dart';
 import 'package:proyecto/features/auth/presentation/screens/login_screen.dart';
+import 'package:proyecto/features/auth/presentation/screens/register_screen.dart';
 
 abstract class AppRoutes {
   static const login = '/login';
@@ -21,6 +22,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.login,
       builder: (context, state) => const LoginScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.register,
+      builder: (context, state) => const RegisterScreen(),
     ),
     GoRoute(
       path: AppRoutes.playground,

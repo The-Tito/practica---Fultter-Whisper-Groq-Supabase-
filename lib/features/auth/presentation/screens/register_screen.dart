@@ -9,15 +9,16 @@ import 'package:proyecto/core/widgets/app_text_field.dart';
 import 'package:proyecto/core/widgets/base_screen.dart';
 import 'package:proyecto/features/auth/presentation/providers/auth_provider.dart';
 
-class LoginScreen extends ConsumerStatefulWidget {
-  const LoginScreen({super.key});
+class RegisterScreen extends ConsumerStatefulWidget {
+  const RegisterScreen({super.key});
 
   @override
-  ConsumerState<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends ConsumerState<LoginScreen> {
+class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _formkey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
@@ -25,6 +26,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   void dispose() {
     _emailController.dispose();
+    _nameController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
@@ -46,7 +48,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       }
     });
     final isLoading = ref.watch(authProvider) is AuthLoading;
-
     return BaseScreen(
       child: SafeArea(
         child: LayoutBuilder(
@@ -56,17 +57,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 constraints: BoxConstraints(minHeight: constraints.maxHeight),
                 child: IntrinsicHeight(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    padding: EdgeInsets.symmetric(horizontal: 24),
                     child: Form(
                       key: _formkey,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const SizedBox(height: 24),
-                          _buildLogo(),
-                          const SizedBox(height: 48),
+                          SizedBox(height: 24),
+                          _buildBack(),
+                          SizedBox(height: 32),
                           _buildHeader(),
-                          const SizedBox(height: 32),
+                          SizedBox(height: 32),
                           _buildForm(),
                           const Spacer(),
                           _buildActions(isLoading),
@@ -84,39 +85,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-  Widget _buildLogo() {
+  Widget _buildBack() {
     return Row(
       children: [
         Container(
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: AppColors.purple,
-            borderRadius: BorderRadius.circular(10),
+            color: Colors.white.withAlpha(32),
+            borderRadius: BorderRadius.circular(32),
           ),
-          child: const Icon(
-            Icons.graphic_eq_rounded,
-            color: Colors.white,
-            size: 20,
+          child: IconButton(
+            onPressed: () {
+              appRouter.pop();
+            },
+            icon: Icon(Icons.arrow_back, size: 20),
           ),
-        ),
-        const SizedBox(width: 10),
-        const Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'VOCA',
-              style: TextStyle(
-                color: AppColors.textPrimary,
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              'by Practica',
-              style: TextStyle(color: AppColors.textSecondary, fontSize: 11),
-            ),
-          ],
         ),
       ],
     );
@@ -127,10 +111,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Bienvenido de\nvuelta.',
+          'Crea tu cuenta.',
           style: Theme.of(context).textTheme.displayLarge,
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         Text(
           'Convierte tu voz en palabras que importan.',
           style: Theme.of(context).textTheme.bodyMedium,
@@ -142,6 +126,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget _buildForm() {
     return Column(
       children: [
+        AppTextField(
+          controller: _nameController,
+          label: 'NOMBRE',
+          hint: 'tu nombre',
+          validator: (value) {
+            if (value == null || value.trim().isEmpty)
+              return 'Ingresa tu nombre';
+            if (value.length < 2) return 'Nombre invalido';
+            return null;
+          },
+        ),
+        const SizedBox(height: 12),
         AppTextField(
           controller: _emailController,
           label: 'CORREO',
@@ -184,7 +180,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           child: TextButton(
             onPressed: () {},
             child: const Text(
-              '¿Olvidaste tu contraseña?',
+              'Al registrarse aceptas los terminos y la Politica de privacidad',
               style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
             ),
           ),
@@ -197,9 +193,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     return Column(
       children: [
         AppPrimaryButton(
-          label: 'Iniciar sesión',
+          label: 'Crear Cuenta',
           isLoading: isLoading,
-          onPressed: isLoading ? null : _handleLogin,
+          onPressed: isLoading ? null : _handlerRegister,
         ),
         const SizedBox(height: 20),
         Row(
@@ -221,31 +217,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         const SizedBox(height: 20),
         AppGoogleButton(onPressed: isLoading ? null : _handleGoogleLogin),
         const SizedBox(height: 16),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              '¿No tienes cuenta?',
-              style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
-            ),
-            TextButton(
-              onPressed: () => context.push(AppRoutes.register),
-              child: const Text(
-                'Regístrate',
-                style: TextStyle(
-                  color: AppColors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ],
-        ),
       ],
     );
   }
 
-  void _handleLogin() {
+  void _handlerRegister() {
     if (_formkey.currentState?.validate() ?? false) {
       ref
           .read(authProvider.notifier)
