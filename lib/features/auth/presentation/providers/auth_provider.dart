@@ -1,8 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:proyecto/features/auth/data/datasources/mock_auth_datasource.dart';
-import 'package:proyecto/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:proyecto/core/di/injection.dart';
 import 'package:proyecto/features/auth/domain/entities/user_entity.dart';
-import 'package:proyecto/features/auth/domain/usecases/login_usecase.dart';
+import 'package:proyecto/features/auth/domain/repositories/auth_repository.dart';
 
 // Estado
 sealed class AuthState {
@@ -31,32 +30,38 @@ final class AuthError extends AuthState {
 // Login con email
 class AuthNotifier extends Notifier<AuthState> {
   @override
-  AuthState build() => AuthInitial();
+  AuthState build() => const AuthInitial();
 
-  AuthRepositoryImpl get _repository =>
-      AuthRepositoryImpl(MockAuthDataSource());
+  AuthRepository get _repository => getIt<AuthRepository>();
 
   Future<void> loginWithEmail({
     required String email,
     required String password,
   }) async {
     state = const AuthLoading();
-
     try {
-      final user = await LoginUsecase(
-        _repository,
-      ).executeLogin(email: email, password: password);
+      final user = await _repository.loginWithEmail(
+        email: email,
+        password: password,
+      );
       state = AuthAuthenticated(user);
     } catch (e) {
       state = AuthError(e.toString());
     }
   }
 
-  // Login con Google
-  Future<void> loginWithGoogle() async {
+  Future<void> registerWithEmail({
+    required String name,
+    required String email,
+    required String password,
+  }) async {
     state = const AuthLoading();
     try {
-      final user = await _repository.loginWithGoogle();
+      final user = await _repository.registerWithEmail(
+        name: name,
+        email: email,
+        password: password,
+      );
       state = AuthAuthenticated(user);
     } catch (e) {
       state = AuthError(e.toString());

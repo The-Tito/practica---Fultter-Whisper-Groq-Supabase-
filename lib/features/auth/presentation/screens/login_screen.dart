@@ -256,7 +256,5 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
-  void _handleGoogleLogin() {
-    ref.read(authProvider.notifier).loginWithGoogle();
-  }
+  void _handleGoogleLogin() {}
 }
