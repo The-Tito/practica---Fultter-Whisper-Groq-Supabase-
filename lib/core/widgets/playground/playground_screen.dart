@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:proyecto/core/theme/app_colors.dart';
 import 'package:proyecto/core/widgets/app_bottom_nav_bar.dart';
@@ -8,6 +11,8 @@ import 'package:proyecto/core/widgets/base_screen.dart';
 import 'package:proyecto/core/widgets/mic_button.dart';
 import 'package:proyecto/features/dashboard/presentation/widgets/hero_record_card.dart';
 import 'package:proyecto/features/dashboard/presentation/widgets/stat_card.dart';
+import 'package:proyecto/features/recording/presentation/widgets/orb_stop_button.dart';
+import 'package:proyecto/features/recording/presentation/widgets/recording_waveform.dart';
 
 class PlaygroundScreen extends StatefulWidget {
   const PlaygroundScreen({super.key});
@@ -17,11 +22,33 @@ class PlaygroundScreen extends StatefulWidget {
 }
 
 class _PlaygroundScreenState extends State<PlaygroundScreen> {
+  double _amplitude = 0.05;
+  bool _isActive = false;
+  Timer? _timer;
+  final _random = Random();
+
+  void _toggleSimulation() {
+    setState(() => _isActive = !_isActive);
+
+    if (_isActive) {
+      _timer = Timer.periodic(const Duration(milliseconds: 100), (_) {
+        setState(() {
+          // Simula voz humana: valores entre 0.2 y 0.9 con ruido
+          _amplitude = 0.2 + _random.nextDouble() * 0.7;
+        });
+      });
+    } else {
+      _timer?.cancel();
+      setState(() => _amplitude = 0.05);
+    }
+  }
+
   final _controller = TextEditingController();
   bool _obscure = true;
 
   @override
   void dispose() {
+    _timer?.cancel();
     _controller.dispose();
     super.dispose();
   }
@@ -109,6 +136,16 @@ class _PlaygroundScreenState extends State<PlaygroundScreen> {
               title: 'Captura tu voz.\nTe devolvemos texto.',
               onRecord: () {},
             ),
+            _section('WaveForm'),
+            RecordingWaveform(amplitude: _amplitude, isActive: _isActive),
+            const SizedBox(height: 40),
+            ElevatedButton(
+              onPressed: _toggleSimulation,
+              child: Text(_isActive ? 'Detener' : 'Simular grabación'),
+            ),
+            _section('OrbButton'),
+            const SizedBox(height: 40),
+            OrbStopButton(onTap: () {}),
           ],
         ),
       ),
