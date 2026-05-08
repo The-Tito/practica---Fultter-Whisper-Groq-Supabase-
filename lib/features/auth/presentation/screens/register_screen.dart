@@ -88,19 +88,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   Widget _buildBack() {
     return Row(
       children: [
-        Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            color: Colors.white.withAlpha(32),
-            borderRadius: BorderRadius.circular(32),
-          ),
-          child: IconButton(
-            onPressed: () {
-              appRouter.pop();
-            },
-            icon: Icon(Icons.arrow_back, size: 20),
-          ),
+        GestureDetector(
+          onTap: () {
+            appRouter.pop();
+          },
+          child: const Icon(Icons.chevron_left, color: Colors.white, size: 32),
         ),
       ],
     );

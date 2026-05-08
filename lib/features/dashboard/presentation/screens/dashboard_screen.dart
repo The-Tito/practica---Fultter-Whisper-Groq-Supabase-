@@ -6,6 +6,7 @@ import 'package:proyecto/core/theme/app_colors.dart';
 import 'package:proyecto/core/widgets/app_bottom_nav_bar.dart';
 import 'package:proyecto/core/widgets/base_screen.dart';
 import 'package:proyecto/core/widgets/mic_button.dart';
+import 'package:proyecto/features/auth/presentation/providers/auth_provider.dart';
 import 'package:proyecto/features/dashboard/presentation/widgets/hero_record_card.dart';
 import 'package:proyecto/features/dashboard/presentation/widgets/stat_card.dart';
 import 'package:proyecto/features/transcriptions/presentation/widgets/recent_item.dart';
@@ -20,6 +21,10 @@ class DashboardScreen extends ConsumerStatefulWidget {
 class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authProvider);
+    final name = authState is AuthAuthenticated
+        ? (authState.user.name ?? authState.user.email)
+        : '';
     return BaseScreen(
       child: Stack(
         fit: StackFit.expand,
@@ -30,7 +35,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Column(
                   children: [
-                    _buildHeader('Antonio'),
+                    _buildHeader(name),
                     SizedBox(height: 24),
                     HeroRecordCard(
                       statusLabel: 'LISTO PARA ESCUCHAR',
@@ -51,11 +56,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                               ],
                             ),
                             shadow: BoxShadow(
-                              color: Color(
-                                0xFF5BD3C5,
-                              ).withAlpha(60), // mismo color, semi-transparente
-                              blurRadius: 10, // qué tan difuso es el glow
-                              spreadRadius: 2, // qué tan lejos se expande
+                              color: Color(0xFF5BD3C5).withAlpha(60),
+                              blurRadius: 10,
+                              spreadRadius: 2,
                             ),
                             label: 'ESTE MES',
                             value: '4h 12m',
@@ -71,11 +74,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                               colors: [Color(0xff6C95EE), Color(0xff2A4DD5)],
                             ),
                             shadow: BoxShadow(
-                              color: Color(
-                                0xFF6C95EE,
-                              ).withAlpha(60), // mismo color, semi-transparente
-                              blurRadius: 10, // qué tan difuso es el glow
-                              spreadRadius: 2, // qué tan lejos se expande
+                              color: Color(0xFF6C95EE).withAlpha(60),
+                              blurRadius: 10,
+                              spreadRadius: 2,
                             ),
                             label: 'ESTE MES',
                             value: '4h 12m',
