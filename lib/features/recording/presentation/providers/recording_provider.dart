@@ -64,17 +64,9 @@ class RecordingNotifier extends Notifier<RecordingState> {
       _currentFilePath = filePath;
 
       await _startUsecase.execute(filePath);
-      _startTimer(); // timer independiente
+      _startTimer();
       _ampSubscription = _repository.amplitudeStream.listen((amp) {
         _currentAmplitude = amp;
-      });
-
-      _ampSubscription = _repository.amplitudeStream.listen((amp) {
-        _elapsedMs += 100;
-        state = RecordingInProgress(
-          elapsed: Duration(milliseconds: _elapsedMs),
-          amplitude: amp,
-        );
       });
     } catch (e) {
       state = RecordingError(e.toString());

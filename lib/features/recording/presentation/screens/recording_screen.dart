@@ -72,6 +72,11 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen> {
               ),
               const SizedBox(height: 48),
               RecordingWaveform(amplitude: amplitude, isActive: isRecording),
+              if (recordingState is RecordingInProgress)
+                Text(
+                  'amp: ${(recordingState as RecordingInProgress).amplitude.toStringAsFixed(3)}',
+                  style: const TextStyle(color: Colors.yellow, fontSize: 12),
+                ),
               const Spacer(),
               OrbStopButton(
                 onTap: () =>

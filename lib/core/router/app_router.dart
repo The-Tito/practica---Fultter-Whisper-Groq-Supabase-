@@ -19,7 +19,7 @@ abstract class AppRoutes {
 }
 
 final appRouter = GoRouter(
-  initialLocation: AppRoutes.recording,
+  initialLocation: AppRoutes.login,
   routes: [
     GoRoute(
       path: AppRoutes.login,
