@@ -31,7 +31,13 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen> {
 
     ref.listen(recordingProvider, (_, next) {
       if (next is RecordingDone) {
-        context.go(AppRoutes.library);
+        context.go(
+          AppRoutes.processing,
+          extra: {
+            'filePath': next.filePath,
+            'durationSeconds': next.duration.inSeconds,
+          },
+        );
       }
       if (next is RecordingError) {
         ScaffoldMessenger.of(
