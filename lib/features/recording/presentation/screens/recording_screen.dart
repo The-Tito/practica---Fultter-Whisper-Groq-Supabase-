@@ -31,7 +31,13 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen> {
 
     ref.listen(recordingProvider, (_, next) {
       if (next is RecordingDone) {
-        context.go(AppRoutes.library);
+        context.go(
+          AppRoutes.processing,
+          extra: {
+            'filePath': next.filePath,
+            'durationSeconds': next.duration.inSeconds,
+          },
+        );
       }
       if (next is RecordingError) {
         ScaffoldMessenger.of(
@@ -72,6 +78,11 @@ class _RecordingScreenState extends ConsumerState<RecordingScreen> {
               ),
               const SizedBox(height: 48),
               RecordingWaveform(amplitude: amplitude, isActive: isRecording),
+              if (recordingState is RecordingInProgress)
+                Text(
+                  'amp: ${(recordingState as RecordingInProgress).amplitude.toStringAsFixed(3)}',
+                  style: const TextStyle(color: Colors.yellow, fontSize: 12),
+                ),
               const Spacer(),
               OrbStopButton(
                 onTap: () =>

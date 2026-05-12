@@ -22,7 +22,7 @@ class RecordingRepositoryImpl implements RecordingRepository {
   Future<String> buildFilePath() => _datasource.builFilePath();
 
   @override
-  Future<void> pauseRecording() => _datasource.stopRecording();
+  Future<void> pauseRecording() => _datasource.pauseRecording();
 
   @override
   Future<void> resumeRecording() => _datasource.resumeRecording();
