@@ -10,4 +10,7 @@ abstract class ProcessingRepository {
     required String audioPath,
     required int durationSeconds,
   });
+  Future<Map<String, dynamic>> getTranscriptionById(String id);
+  Future<String> getSignedUrl(String storagePath);
+  Future<List<Map<String, dynamic>>> getAllTranscriptions();
 }

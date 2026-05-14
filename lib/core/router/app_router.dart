@@ -8,6 +8,7 @@ import 'package:proyecto/features/dashboard/presentation/screens/dashboard_scree
 import 'package:proyecto/features/processing/presentation/screens/processing_screen.dart';
 import 'package:proyecto/features/profile/presentation/screens/profile_screen.dart';
 import 'package:proyecto/features/recording/presentation/screens/recording_screen.dart';
+import 'package:proyecto/features/transcriptions/presentation/screens/detail_screen.dart';
 import 'package:proyecto/features/transcriptions/presentation/screens/library_screen.dart';
 
 abstract class AppRoutes {
@@ -96,15 +97,8 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/detail/:id',
-      builder: (context, state) => Scaffold(
-        backgroundColor: AppColors.background,
-        body: Center(
-          child: Text(
-            'ID: ${state.pathParameters['id']!}',
-            style: const TextStyle(color: Colors.white),
-          ),
-        ),
-      ),
+      builder: (context, state) =>
+          DetailScreen(transcriptionId: state.pathParameters['id']!),
     ),
   ],
 );

@@ -82,4 +82,37 @@ class ProcessingRepositoryImpl implements ProcessingRepository {
       );
     }
   }
+
+  @override
+  Future<Map<String, dynamic>> getTranscriptionById(String id) async {
+    try {
+      return await _transcription.getById(id);
+    } catch (e) {
+      throw Exception(
+        'Error al cargar la nota: ${e.toString().replaceAll('Exception: ', '')}',
+      );
+    }
+  }
+
+  @override
+  Future<String> getSignedUrl(String storagePath) async {
+    try {
+      return await _storage.getSignedUrl(storagePath);
+    } catch (e) {
+      throw Exception(
+        'Error al cargar el audio: ${e.toString().replaceAll('Exception: ', '')}',
+      );
+    }
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> getAllTranscriptions() async {
+    try {
+      return await _transcription.getAll();
+    } catch (e) {
+      throw Exception(
+        'Error al cargar las notas: ${e.toString().replaceAll('Exception: ', '')}',
+      );
+    }
+  }
 }

@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 abstract class StorageDatasource {
   Future<String> uploadAudio(String filePath);
+  Future<String> getSignedUrl(String storagePath);
 }
 
 class SupabaseStorageDatasource implements StorageDatasource {
@@ -25,5 +26,12 @@ class SupabaseStorageDatasource implements StorageDatasource {
         );
 
     return storagePath;
+  }
+
+  @override
+  Future<String> getSignedUrl(String storagePath) async {
+    return await _client.storage
+        .from('audio-recordings')
+        .createSignedUrl(storagePath, 3600);
   }
 }
