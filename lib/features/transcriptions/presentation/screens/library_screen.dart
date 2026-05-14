@@ -173,7 +173,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
           title: item['title'] as String,
           date: _formatDate(createdAt),
           duration: _formatDuration(duration),
-          onTap: () => context.go('${AppRoutes.detail}/${item['id']}'),
+          onTap: () => context.push('${AppRoutes.detail}/${item['id']}'),
           tag: '',
           tagColor: null,
         );

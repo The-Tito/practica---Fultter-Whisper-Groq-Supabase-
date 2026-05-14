@@ -4,10 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:proyecto/core/router/app_router.dart';
 import 'package:proyecto/core/theme/app_colors.dart';
 import 'package:proyecto/core/widgets/base_screen.dart';
 import 'package:proyecto/features/transcriptions/presentation/providers/detail_provider.dart';
+import 'package:proyecto/features/transcriptions/presentation/widgets/audio_player_card.dart';
+import 'package:proyecto/features/transcriptions/presentation/widgets/detail_header.dart';
 
 class DetailScreen extends ConsumerStatefulWidget {
   final String transcriptionId;
@@ -23,7 +24,6 @@ class _DetailScreenState extends ConsumerState<DetailScreen>
   List<double> _waveformBars = [];
   final AudioPlayer _player = AudioPlayer();
   late TabController _tabController;
-  double _playbackSpeed = 1.0;
 
   @override
   void initState() {
@@ -69,265 +69,28 @@ class _DetailScreenState extends ConsumerState<DetailScreen>
   }
 
   Widget _buildContent(DetailLoaded state) {
-    return SafeArea(
-      child: Column(
-        children: [
-          _buildHeader(state), // título, fecha, duración
-          _buildPlayer(state), // reproductor con waveform
-          _buildTabBar(), // Transcripción | Resumen IA
-          Expanded(
-            child: _buildTabContent(state), // contenido de la pestaña activa
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildWaveform() {
-    return StreamBuilder<Duration>(
-      stream: _player.positionStream,
-      builder: (context, snapshot) {
-        final position = snapshot.data ?? Duration.zero;
-        final duration = _player.duration ?? Duration.zero;
-        final progress = duration.inMilliseconds > 0
-            ? position.inMilliseconds / duration.inMilliseconds
-            : 0.0;
-
-        return SizedBox(
-          height: 80,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: List.generate(_waveformBars.length, (i) {
-              // ¿Esta barra ya fue "reproducida"?
-              final played = i / _waveformBars.length < progress;
-
-              return Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 1.5),
-                  child: Container(
-                    height: _waveformBars[i] * 80,
-                    decoration: BoxDecoration(
-                      color: played ? Colors.white : Colors.white.withAlpha(60),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ),
-                ),
-              );
-            }),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildPlayer(DetailLoaded state) {
-    return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        gradient: const RadialGradient(
-          center: Alignment.topLeft,
-          radius: 2,
-          colors: [Color(0xFF9B75F6), Color(0xFF5E41DB)],
-        ),
-      ),
-      child: Column(
-        children: [
-          // Tiempos arriba del waveform
-          StreamBuilder<Duration>(
-            stream: _player.positionStream,
-            builder: (context, snapshot) {
-              final position = snapshot.data ?? Duration.zero;
-              final duration =
-                  _player.duration ?? Duration(seconds: state.durationSeconds);
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    _formatDuration(position),
-                    style: const TextStyle(color: Colors.white, fontSize: 13),
-                  ),
-                  Text(
-                    _formatDuration(duration),
-                    style: const TextStyle(color: Colors.white70, fontSize: 13),
-                  ),
-                ],
-              );
-            },
-          ),
-          const SizedBox(height: 12),
-
-          // Waveform
-          _buildWaveform(),
-          const SizedBox(height: 20),
-
-          // Controles: -15s | play/pause | +15s
-          StreamBuilder<PlayerState>(
-            stream: _player.playerStateStream,
-            builder: (context, snapshot) {
-              final isPlaying = snapshot.data?.playing ?? false;
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildSkipButton(Icons.replay_10, () {
-                    final pos = _player.position;
-                    _player.seek(pos - const Duration(seconds: 15));
-                  }),
-                  const SizedBox(width: 24),
-                  _buildPlayButton(isPlaying),
-                  const SizedBox(width: 24),
-                  _buildSkipButton(Icons.forward_10, () {
-                    final pos = _player.position;
-                    _player.seek(pos + const Duration(seconds: 15));
-                  }),
-                ],
-              );
-            },
-          ),
-          const SizedBox(height: 16),
-
-          // Velocidad
-          _buildSpeedControl(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPlayButton(bool isPlaying) {
-    return GestureDetector(
-      onTap: () => isPlaying ? _player.pause() : _player.play(),
-      child: Container(
-        width: 56,
-        height: 56,
-        decoration: const BoxDecoration(
-          shape: BoxShape.circle,
-          color: Colors.white,
-        ),
-        child: Icon(
-          isPlaying ? Icons.pause : Icons.play_arrow,
-          color: AppColors.purple,
-          size: 28,
+    return SingleChildScrollView(
+      child: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            DetailHeader(
+              title: state.title,
+              createdAt: state.createdAt,
+              durationSeconds: state.durationSeconds,
+              onBack: () => context.pop(),
+            ),
+            AudioPlayerCard(
+              player: _player,
+              waveformBars: _waveformBars,
+              durationSeconds: state.durationSeconds,
+            ),
+            _buildTabBar(),
+            _buildTabContent(state),
+          ],
         ),
       ),
     );
-  }
-
-  Widget _buildSkipButton(IconData icon, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Colors.white.withAlpha(40),
-        ),
-        child: Icon(icon, color: Colors.white, size: 22),
-      ),
-    );
-  }
-
-  Widget _buildSpeedControl() {
-    final speeds = [1.0, 1.5, 2.0];
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: speeds.map((speed) {
-        final isSelected = _playbackSpeed == speed;
-        return GestureDetector(
-          onTap: () {
-            setState(() => _playbackSpeed = speed);
-            _player.setSpeed(speed);
-          },
-          child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 6),
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-            decoration: BoxDecoration(
-              color: isSelected
-                  ? Colors.white.withAlpha(60)
-                  : Colors.white.withAlpha(25),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              '${speed}x',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                fontSize: 13,
-              ),
-            ),
-          ),
-        );
-      }).toList(),
-    );
-  }
-
-  // Helper para formatear duración
-  String _formatDuration(Duration d) {
-    final minutes = d.inMinutes.toString().padLeft(2, '0');
-    final seconds = (d.inSeconds % 60).toString().padLeft(2, '0');
-    return '$minutes:$seconds';
-  }
-
-  Widget _buildHeader(DetailLoaded state) {
-    final date = state.createdAt;
-    final dateStr =
-        '${date.day} ${_monthName(date.month)} · '
-        '${_formatDuration(Duration(seconds: state.durationSeconds))}';
-
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Botón back
-          GestureDetector(
-            onTap: () => appRouter.pop(),
-            child: const Icon(
-              Icons.chevron_left,
-              color: Colors.white,
-              size: 32,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            state.title,
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            dateStr,
-            style: const TextStyle(
-              fontSize: 13,
-              color: AppColors.textSecondary,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  String _monthName(int month) {
-    const months = [
-      '',
-      'Ene',
-      'Feb',
-      'Mar',
-      'Abr',
-      'May',
-      'Jun',
-      'Jul',
-      'Ago',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dic',
-    ];
-    return months[month];
   }
 
   Widget _buildTabBar() {
@@ -363,35 +126,24 @@ class _DetailScreenState extends ConsumerState<DetailScreen>
   }
 
   Widget _buildTabContent(DetailLoaded state) {
-    return TabBarView(
-      controller: _tabController,
-      children: [
-        // Pestaña 1 — Transcripción
-        SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
+    return AnimatedBuilder(
+      animation: _tabController,
+      builder: (_, __) {
+        final text = _tabController.index == 0
+            ? state.transcript
+            : state.aiContent;
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
           child: Text(
-            state.transcript,
+            text,
             style: const TextStyle(
               color: AppColors.textPrimary,
               fontSize: 15,
               height: 1.6,
             ),
           ),
-        ),
-
-        // Pestaña 2 — Resumen IA
-        SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Text(
-            state.aiContent,
-            style: const TextStyle(
-              color: AppColors.textPrimary,
-              fontSize: 15,
-              height: 1.6,
-            ),
-          ),
-        ),
-      ],
+        );
+      },
     );
   }
 
