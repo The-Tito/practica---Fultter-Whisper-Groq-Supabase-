@@ -8,6 +8,8 @@ abstract class TranscriptionDatasource {
     required String audioPath,
     required int durationSeconds,
   });
+  Future<Map<String, dynamic>> getById(String id);
+  Future<List<Map<String, dynamic>>> getAll();
 }
 
 class SupabaseTranscriptionDatasource implements TranscriptionDatasource {
@@ -39,5 +41,29 @@ class SupabaseTranscriptionDatasource implements TranscriptionDatasource {
         .single();
 
     return response['id'] as String;
+  }
+
+  @override
+  Future<Map<String, dynamic>> getById(String id) async {
+    final response = await _client
+        .from('transcriptions')
+        .select()
+        .eq('id', id)
+        .single();
+
+    return response;
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> getAll() async {
+    final userId = _client.auth.currentUser!.id;
+
+    final response = await _client
+        .from('transcriptions')
+        .select('id, title, transcript, duration_seconds, created_at')
+        .eq('user_id', userId)
+        .order('created_at', ascending: false);
+
+    return List<Map<String, dynamic>>.from(response);
   }
 }

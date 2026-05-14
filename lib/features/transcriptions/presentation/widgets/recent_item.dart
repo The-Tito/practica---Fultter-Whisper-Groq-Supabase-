@@ -4,8 +4,8 @@ import 'package:proyecto/core/theme/app_colors.dart';
 class RecentItem extends StatelessWidget {
   final Color iconColor;
   final String title;
-  final String tag;
-  final Color tagColor;
+  final String? tag;
+  final Color? tagColor;
   final String date;
   final String duration;
   final VoidCallback onTap;
@@ -64,24 +64,26 @@ class RecentItem extends StatelessWidget {
                   Row(
                     children: [
                       // Tag
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: tagColor.withAlpha(40),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          tag,
-                          style: TextStyle(
-                            color: tagColor,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
+                      if (tag != null && tagColor != null)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: tagColor?.withAlpha(40),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            tag ?? '',
+                            style: TextStyle(
+                              color: tagColor,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
-                      ),
+
                       const SizedBox(width: 8),
                       Text(
                         '$date · $duration',
