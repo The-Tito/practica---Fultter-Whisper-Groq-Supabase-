@@ -60,7 +60,7 @@ class _ProcessingScreenState extends ConsumerState<ProcessingScreen> {
         final index = _stepMap[next.message];
         if (index != null) setState(() => _currentStep = index);
       } else if (next is ProcessingDone) {
-        context.go('${AppRoutes.detail}/${next.transcriptionId}');
+        context.push('${AppRoutes.detail}/${next.transcriptionId}');
       }
     });
 

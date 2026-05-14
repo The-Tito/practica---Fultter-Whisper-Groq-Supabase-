@@ -10,6 +10,7 @@ import 'package:proyecto/features/profile/presentation/screens/profile_screen.da
 import 'package:proyecto/features/recording/presentation/screens/recording_screen.dart';
 import 'package:proyecto/features/transcriptions/presentation/screens/detail_screen.dart';
 import 'package:proyecto/features/transcriptions/presentation/screens/library_screen.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 abstract class AppRoutes {
   static const login = '/login';
@@ -25,6 +26,19 @@ abstract class AppRoutes {
 
 final appRouter = GoRouter(
   initialLocation: AppRoutes.login,
+  redirect: (context, state) {
+    final session = Supabase.instance.client.auth.currentSession;
+    final isLoggedIn = session != null;
+
+    final isAuthRoute =
+        state.matchedLocation == AppRoutes.login ||
+        state.matchedLocation == AppRoutes.register;
+
+    if (isLoggedIn && isAuthRoute) return AppRoutes.dashboard;
+    if (!isLoggedIn && !isAuthRoute) return AppRoutes.login;
+
+    return null;
+  },
   routes: [
     GoRoute(
       path: AppRoutes.login,
